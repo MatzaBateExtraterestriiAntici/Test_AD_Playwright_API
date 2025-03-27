@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const reportPath = path.join(__dirname, 'playwright-reports', 'json-report', 'results.json');
+const reportPath = path.resolve(__dirname, '..', 'playwright-reports', 'json-report', 'results.json');
 const summaryPath = process.env.GITHUB_STEP_SUMMARY; // GitHub Actions Summary File
 
 if (!fs.existsSync(reportPath)) {
