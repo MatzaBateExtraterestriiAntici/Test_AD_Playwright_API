@@ -37,7 +37,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "------------------------- Build parameters --------------------------"
-          echo "WIP"
+          echo "What runner to use: ${{ vars.WHAT_RUNNER_TO_USE }}"
           echo "------------------------ GitHub CONTEXT used ------------------------"
           echo "event_name: ${{ github.event_name }}"
           echo "ref: ${{ github.ref }}"
@@ -76,10 +76,13 @@ jobs:
         run: npx playwright test --reporter=html  # Generate HTML report
       
       # STEP: Upload the test results
-      - name: Upload Playwright Report
+      - name: Upload Playwright Report (HTML)
         if: always()  # Run this step even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: Playwright-Report
-          path: playwright-report/  # The folder where Playwright stores reports
+          path: playwright-reports/html-report/  # The folder where we have stored the Playwright HTML report
           retention-days: 7  # Keep for 7 days
+      
+      - name: Generate Test Summary for GitHub Action
+        run: node .github/gitHubSummaryGenerator.js
