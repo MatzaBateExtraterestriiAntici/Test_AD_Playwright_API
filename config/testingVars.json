@@ -1,0 +1,5 @@
+{
+    "timeoutSmall": 1000,
+    "timeoutMedium": 5000,
+    "timeoutLarge": 10000
+}

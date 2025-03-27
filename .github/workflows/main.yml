@@ -1,0 +1,85 @@
+# Workflow from the main.yml
+name: Run the 'Playwright' tests
+
+# When to run the workflow
+on:
+  # Start the workflow automatically when a push is created
+  push:
+    # On what branches to start the workflow when a push is created
+    branches:
+      - develop
+      - 'release/**/*'
+  # Start the workflow automatically when a PR is created
+  pull_request:
+    # On what branches to start the workflow when a push is created
+    branches:
+      - '**'  # Run on all pull requests on any branches
+  # Allow the start of the workflow to be performed by manually starting it
+  workflow_dispatch:
+    # Area dedicated for the inputs of the workflow
+    # inputs:
+      #INPUT_BOX_____WIP_FOR_NOW:
+      #  # TEST WIP
+
+# Jobs that will perform the effective actions of the workflow
+jobs:
+  # First job
+  PlaywrightTesting:
+    # What runner should be used to perform the actions of the workflow
+    runs-on: ${{ vars.WHAT_RUNNER_TO_USE }}
+
+    # What efective steps should be performed as the part of this job
+    steps:
+
+      # STEP:
+      - name: Show build parameters
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "------------------------- Build parameters --------------------------"
+          echo "WIP"
+          echo "------------------------ GitHub CONTEXT used ------------------------"
+          echo "event_name: ${{ github.event_name }}"
+          echo "ref: ${{ github.ref }}"
+          echo "repository: ${{ github.repository }}"
+          echo "run_id: ${{ github.run_id }}"
+          echo "run_number: ${{ github.run_number }}"
+          echo "run_attempt: ${{ github.run_attempt }}"
+          echo "retention_days: ${{ github.retention_days }}"
+          echo "triggering_actor: ${{ github.triggering_actor }}"
+        shell: bash
+      
+      # STEP: Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          clean: true  # This will remove any untracked files and reset the directory
+          fetch-depth: 0 # Use this to get the full history instead of just the last commit
+          submodules: true # Not used currently but will be used in the future
+
+      # STEP: Setup NODE.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # STEP: Install dependencies
+      - name: Install Dependencies
+        run: npm ci  # Use 'npm install' if 'package-lock.json' is missing
+
+      # STEP: Install Playwright browsers
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # STEP: Run the Playwright tests
+      - name: Run Playwright Tests
+        run: npx playwright test --reporter=html  # Generate HTML report
+      
+      # STEP: Upload the test results
+      - name: Upload Playwright Report
+        if: always()  # Run this step even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: Playwright-Report
+          path: playwright-report/  # The folder where Playwright stores reports
+          retention-days: 7  # Keep for 7 days
