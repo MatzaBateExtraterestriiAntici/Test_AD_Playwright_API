@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const jsonReportPath = path.join(__dirname, "results.json");
+const jsonReportPath = path.join(__dirname, "playwright-reports/json-report/results.json");
 const githubSummaryPath = process.env.GITHUB_STEP_SUMMARY;
 
 function extractSummary(reportPath) {
