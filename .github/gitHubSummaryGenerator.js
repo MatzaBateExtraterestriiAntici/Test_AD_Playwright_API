@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Paths to the JSON report and GitHub Actions Summary
-const jsonReportPath = path.resolve(__dirname, '..', 'playwright-report', 'results.json');
+const jsonReportPath = path.resolve(__dirname, '..', 'playwright-reports', 'json-report', 'results.json');
 const summaryPath = process.env.GITHUB_STEP_SUMMARY;
 
 // Check if JSON report exists
