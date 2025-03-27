@@ -73,7 +73,7 @@ jobs:
 
       # STEP: Run the Playwright tests
       - name: Run Playwright Tests
-        run: npx playwright test --reporter=html  # Generate HTML report
+        run: npx playwright test  # Generate HTML and JSON reports
       
       # STEP: Upload the test results
       - name: Upload Playwright Report (HTML)
