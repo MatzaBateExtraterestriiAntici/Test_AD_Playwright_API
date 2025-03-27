@@ -12,7 +12,7 @@ if (!fs.existsSync(jsonReportPath)) {
 }
 
 // Read and parse the JSON report
-const report = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
+const jsonData = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
 
 // Extract test details
 let summary = `# ✅ Playwright Test Summary\n\n`;
@@ -63,7 +63,7 @@ jsonData.suites.forEach(suite => {
 
             summary += `\n---\n`;
         });
-    });
+    
 });
 
 // Write the summary to GitHub Actions Summary
