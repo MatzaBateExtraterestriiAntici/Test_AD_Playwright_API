@@ -80,9 +80,19 @@ jobs:
         if: always()  # Run this step even if tests fail
         uses: actions/upload-artifact@v4
         with:
-          name: Playwright-Report
+          name: Playwright-Report-JTML
           path: playwright-reports/html-report/  # The folder where we have stored the Playwright HTML report
           retention-days: 7  # Keep for 7 days
       
+      # STEP: Generate Summary
       - name: Generate Test Summary for GitHub Action
         run: node .github/gitHubSummaryGenerator.js
+      
+      # STEP: Upload the test results
+      - name: Upload Playwright Report (JSON)
+        if: always()  # Run this step even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: Playwright-Report-JSON
+          path: playwright-reports/json-report/  # The folder where we have stored the Playwright JSON report
+          retention-days: 7  # Keep for 7 days
