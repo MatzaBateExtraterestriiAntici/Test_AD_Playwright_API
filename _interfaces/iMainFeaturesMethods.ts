@@ -2,4 +2,5 @@
 export interface iMainFeaturesMethods {
     VerifyMainFeaturesForGet(expectedStatus: number): Promise<void>;
     VerifyMainFeaturesForGetInParallel(expectedStatus: number, howManyParallelCalls: number): Promise<void>;
+    VerifyMainFeaturesForPost(expectedStatus: number): Promise<void>;
 }
