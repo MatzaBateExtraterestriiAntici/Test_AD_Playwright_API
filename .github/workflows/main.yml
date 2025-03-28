@@ -76,19 +76,9 @@ jobs:
       - name: Update 'workers' in JSON config
         if: ${{ vars.WORKERS_TO_USE != '' && vars.WORKERS_TO_USE != null && vars.WORKERS_TO_USE > 0 }} 
         run: |
-          if ( ${{ runner.os == 'Linux' }} ) {
-            jq '.workers_count = ${{ vars.WORKERS_TO_USE }}' config/testingVars.json > config/temp.json && mv config/temp.json config/testingVars.json
-          }
-          elseif ( ${{ runner.os == 'Windows' }} ) {
-            $config = Get-Content -Raw -Path config/testingVars.json | ConvertFrom-Json
-            $config.workers = ${{ vars.WORKERS_TO_USE }}
-            $config | ConvertTo-Json -Depth 10 | Set-Content -Path config/testingVars.json
-          }
-          else {
-            echo "No valid OS was used for this action....."
-            exit 1
-          }
+          jq '.workers_count = ${{ vars.WORKERS_TO_USE }}' config/testingVars.json > config/temp.json && mv config/temp.json config/testingVars.json
           echo 'Added the value "workers_count" = "${{ vars.WORKERS_TO_USE }}" in the "testingVars.json file.'
+        shell: bash
 
       # STEP: Run the Playwright tests
       - name: Run Playwright Tests
