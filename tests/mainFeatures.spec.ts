@@ -1,12 +1,3 @@
-//import { test, expect, request } from '@playwright/test';
-
-/*test('API Test - GET Request', async ({ request }) => {
-  const response = await request.get('https://reqres.in/api/users/2');
-  expect(response.status()).toBe(200);
-  console.log(await response.json());
-});*/
-
-// apiTest.spec.ts
 import { test, expect } from '@playwright/test';
 import { CustomAPICalls } from '../_framework/customAPICalls';
 
@@ -22,7 +13,8 @@ test.describe(`API Automation testing for '${envVars.baseURL}'`, () => {
   
   let customAPICalls: CustomAPICalls;
 
-  let expectedStatusCode = 200;
+  let expectedStatusCodeGet = 200;
+  let expectedStatusCodePost = 201;
   let howManyParallelCalls = 30;
 
   test.beforeAll(async () => {
@@ -33,12 +25,19 @@ test.describe(`API Automation testing for '${envVars.baseURL}'`, () => {
   test('GET Request (single) - verify main features', async () => {
     const API = new MainFeaturesMethods(customAPICalls);
 
-    await API.VerifyMainFeaturesForGet(expectedStatusCode);
+    await API.VerifyMainFeaturesForGet(expectedStatusCodeGet);
   });
 
   test('GET Request (parallel) - verify main features', async () => {
     const API = new MainFeaturesMethods(customAPICalls);
 
-    await API.VerifyMainFeaturesForGetInParallel(expectedStatusCode, howManyParallelCalls);
+    await API.VerifyMainFeaturesForGetInParallel(expectedStatusCodeGet, howManyParallelCalls);
   });
+
+  test('POST Request (single) - verify main features', async () => {
+    const API = new MainFeaturesMethods(customAPICalls);
+
+    await API.VerifyMainFeaturesForPost(expectedStatusCodePost);
+  });
+
 });

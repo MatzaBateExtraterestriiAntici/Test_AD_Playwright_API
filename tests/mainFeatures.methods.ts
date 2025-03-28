@@ -35,6 +35,16 @@ export class MainFeaturesMethods implements iMainFeaturesMethods {
         this.PerformStandardFeatureValidationsForGet(response);
     }
 
+    async VerifyMainFeaturesForPost(expectedStatus: number) {
+        // Perform the request and retrive the response given
+        const response = await this.customAPICalls.POST('users', {
+                                                                    "name": "morpheus",
+                                                                    "job": "leader"
+                                                                }, expectedStatus, testVars.timeoutMedium);
+        // ✅ Perform the validations
+        this.PerformStandardFeatureValidationsForPost(response[0], response[1]);
+    }
+
     /*  //////////              INTERNAL METHODS              ////////// */
 
     private PerformStandardFeatureValidationsForGet(response) {
@@ -56,5 +66,12 @@ export class MainFeaturesMethods implements iMainFeaturesMethods {
         validationElements.forEach( (key, value) => {
             this.customValidations.expect_are_equal(key, value);
         });
+    }
+
+    private PerformStandardFeatureValidationsForPost(response, endDate) {
+        let regexExplanation = "Character '/' defines a start <-> end of a regex\nCharacter '^' defines the start of the string\nSnippet '\\d{1,3}' matches '\\d' digits from 1 to 3 elements\nCharacter '$' defines the end of the string";
+        // Perform all validations from response
+        this.customValidations.expect_string_matches_regex(response.id, /^\d{1,3}$/, regexExplanation);
+        this.customValidations.expect_date_times_have_less_than_or_max_difference(response.createdAt, endDate, 1000);
     }
 }
