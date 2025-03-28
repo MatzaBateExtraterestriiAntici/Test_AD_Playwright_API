@@ -37,7 +37,8 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "------------------------- Build parameters --------------------------"
-          echo "WIP"
+          echo "What runner to use: ${{ vars.WHAT_RUNNER_TO_USE }}"
+          echo "What workers value to overimpose: ${{ vars.WORKERS_TO_USE }}"
           echo "------------------------ GitHub CONTEXT used ------------------------"
           echo "event_name: ${{ github.event_name }}"
           echo "ref: ${{ github.ref }}"
@@ -70,16 +71,37 @@ jobs:
       # STEP: Install Playwright browsers
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      
+      # STEP: Change (if needed) the 'testingVariables' JSON configuration file (workers value)
+      - name: Update 'workers' in JSON config
+        if: ${{ vars.WORKERS_TO_USE != '' && vars.WORKERS_TO_USE != null && vars.WORKERS_TO_USE > 0 }} 
+        run: |
+          jq '.workers_count = ${{ vars.WORKERS_TO_USE }}' config/testingVars.json > config/temp.json && mv config/temp.json config/testingVars.json
+          echo 'Added the value "workers_count" = "${{ vars.WORKERS_TO_USE }}" in the "testingVars.json file.'
+        shell: bash
 
       # STEP: Run the Playwright tests
       - name: Run Playwright Tests
-        run: npx playwright test --reporter=html  # Generate HTML report
+        run: npx playwright test
+      
+      # STEP: Run the Playwright tests
+      - name: Run Playwright Tests
+        run: npx playwright test  # Generate HTML and JSON reports
       
       # STEP: Upload the test results
-      - name: Upload Playwright Report
+      - name: Upload Playwright Report (HTML)
         if: always()  # Run this step even if tests fail
         uses: actions/upload-artifact@v4
         with:
-          name: Playwright-Report
-          path: playwright-report/  # The folder where Playwright stores reports
+          name: Playwright-Report-JTML
+          path: playwright-reports/html-report/  # The folder where we have stored the Playwright HTML report
+          retention-days: 7  # Keep for 7 days
+      
+      # STEP: Upload the test results
+      - name: Upload Playwright Report (JSON)
+        if: always()  # Run this step even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: Playwright-Report-JSON
+          path: playwright-reports/json-report/  # The folder where we have stored the Playwright JSON report
           retention-days: 7  # Keep for 7 days
