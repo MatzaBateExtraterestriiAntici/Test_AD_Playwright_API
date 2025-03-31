@@ -1,4 +1,4 @@
-import { expect, request, APIRequestContext, APIResponse  } from '@playwright/test';
+import test, { expect, request, APIRequestContext, APIResponse  } from '@playwright/test';
 import { iCustomAPICalls } from '../_interfaces/iCustomAPICalls.js';
 
 // Import and use the JSON file for test variables
@@ -10,6 +10,9 @@ export class CustomAPICalls implements iCustomAPICalls {
 
     private requestContext: APIRequestContext;
     private baseURL: string;
+
+    // The API used will return the response header with the type: "application/json; charset=utf-8"
+    private contentTypeOfResponseHeader = "application/json; charset=utf-8";
 
     constructor(baseURL: string) {
         this.baseURL = baseURL;
@@ -32,7 +35,8 @@ export class CustomAPICalls implements iCustomAPICalls {
         try {
             // Perform the API call required
             const response = await this.PerformGETRequest(endpoint, headers, timeout);
-            //const response =  await this.requestContext.get(`${this.baseURL}${endpoint}`, { headers, timeout });
+            /// Assert that the response header ccontent-type is the expected one
+            expect(response.headers()['content-type']).toBe(this.contentTypeOfResponseHeader);
             // Assert that the status code is the expected one
             expect(response.status()).toBe(expectedResponseCode);
             // Return the response as a JSON representation of the response body
@@ -60,6 +64,8 @@ export class CustomAPICalls implements iCustomAPICalls {
             let jsonArray: Promise<any>[] = [];
             // 🔄 Verify all responses
             for (const response of responses) {
+                // Assert that the response header ccontent-type is the expected one
+                expect(response.headers()['content-type']).toBe(this.contentTypeOfResponseHeader);
                 // Assert that the status code is the expected one
                 expect(response.status()).toBe(expectedResponseCode);
                 // Parse the response body as JSON
@@ -87,6 +93,8 @@ export class CustomAPICalls implements iCustomAPICalls {
         try {
             // Perform the API call required
             const response = await this.PerformPOSTRequest(endpoint, headers, timeout);
+            // Assert that the response header ccontent-type is the expected one
+            expect(response[0].headers()['content-type']).toBe(this.contentTypeOfResponseHeader);
             // Assert that the status code is the expected one
             expect(response[0].status()).toBe(expectedResponseCode);
             // Return the response as a JSON representation of the response body
@@ -95,6 +103,8 @@ export class CustomAPICalls implements iCustomAPICalls {
         catch(error) {
             console.error(`Error encountered on POST call: '${this.baseURL}${endpoint}' !`);
             console.error("More information: ", error);
+            // Forcefully fail the test
+            test.fail(true);
             return [JSON.parse("{}"), new Date('')];
         }
     }
